@@ -113,6 +113,7 @@ inline void DLLINTERNAL reset_dlsym_hook(void)
 //
 // Replacement dlsym function
 //
+#ifndef XASH_DLSYM_META
 static void * __replacement_dlsym(void * module, const char * funcname)
 {
 	//these are needed in case dlsym calls dlsym, default one doesn't do
@@ -181,7 +182,21 @@ static void * __replacement_dlsym(void * module, const char * funcname)
 	
 	return(func);
 }
+#else
 
+extern "C" void *dlsym_metamod( void *module, const char *funcname)
+{	
+	//dlsym on metamod module
+	void * func = DLSYM(module, funcname);
+	
+	if(!func)
+	{
+		//function not in metamod module, try gamedll
+		func = DLSYM(gamedll_module_handle, funcname);
+	}
+	return func;
+}
+#endif
 //
 // Initialize
 //
@@ -189,7 +204,9 @@ int DLLINTERNAL init_linkent_replacement(DLHANDLE MetamodHandle, DLHANDLE GameDl
 {
 	metamod_module_handle = MetamodHandle;
 	gamedll_module_handle = GameDllHandle;
-	
+#ifdef XASH_DLSYM_META
+	return 1;
+#else
 	// dlsym is already known to be pointing to valid function, we loaded gamedll using it earlier!
 	void * sym_ptr = (void*)&dlsym;
 	while(is_code_trampoline_jmp_opcode(sym_ptr)) {
@@ -231,4 +248,5 @@ int DLLINTERNAL init_linkent_replacement(DLHANDLE MetamodHandle, DLHANDLE GameDl
 		
 	//done
 	return(1);
+#endif
 }

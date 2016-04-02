@@ -72,7 +72,9 @@
 #define SET_SERVER_KEYVALUE	    	(*g_engfuncs.pfnSetKeyValue)
 #define QUERY_CLIENT_CVAR_VALUE	    (*g_engfuncs.pfnQueryClientCvarValue)
 #define QUERY_CLIENT_CVAR_VALUE2	(*g_engfuncs.pfnQueryClientCvarValue2)
-
+#ifndef GETPLAYERAUTHID
+#define GETPLAYERAUTHID     (*g_engfuncs.pfnGetPlayerAuthId)
+#endif
 
 #endif /* MM_ENGINECALLBACKS_H */
 
