@@ -48,7 +48,7 @@
 //! this structure contains a list of supported mods and their dlls names
 //! To add support for another mod add an entry here, and add all the 
 //! exported entities to link_func.cpp
-const game_modlist_t known_games = {
+
 	// name/gamedir	 linux_so			win_dll			desc
 	//
 	// Previously enumerated in this sourcefile, the list is now kept in a
@@ -57,8 +57,7 @@ const game_modlist_t known_games = {
 	//
 #include "games.h"
 	// End of list terminator:
-	{NULL, NULL, NULL, NULL}
-};
+
 
 // Find a modinfo corresponding to the given game name.
 const game_modinfo_t * DLLINTERNAL lookup_game(const char *name) {
