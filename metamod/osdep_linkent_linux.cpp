@@ -196,6 +196,63 @@ extern "C" void *dlsym_metamod( void *module, const char *funcname)
 	}
 	return func;
 }
+#include "physint.h"
+
+
+//
+// Xash3D physics interface
+//
+
+typedef void (*LINK_ENTITY_FN)( entvars_t *pev );
+
+//
+// attempt to create custom entity when default method is failed
+// 0 - attempt to create, -1 - reject to create
+//
+int DispatchCreateEntity( edict_t *pent, const char *szName )
+{
+	LINK_ENTITY_FN	SpawnEdict = (LINK_ENTITY_FN)dlsym( gamedll_module_handle , szName );
+
+	if( SpawnEdict )	// found the valid spawn
+	{
+		SpawnEdict( &pent->v );
+		return 0;	// handled
+	}
+
+	return -1; // failed
+}
+//
+//
+// run custom physics for each entity
+// return 0 to use built-in engine physic
+//
+
+int DispatchPhysicsEntity( edict_t *pEdict )
+{
+	return 0;
+}
+
+
+static physics_interface_t gPhysicsInterface =
+{
+	SV_PHYSICS_INTERFACE_VERSION,
+	DispatchCreateEntity,
+	DispatchPhysicsEntity,
+};
+
+extern "C" int Server_GetPhysicsInterface( int iVersion, server_physics_api_t *pfuncsFromEngine, physics_interface_t *pFunctionTable )
+{
+	if( !pFunctionTable || !pfuncsFromEngine || iVersion != SV_PHYSICS_INTERFACE_VERSION )
+	{
+		return FALSE;
+	}
+
+	memcpy( pFunctionTable, &gPhysicsInterface, sizeof(physics_interface_t) );
+
+	return TRUE;
+}
+
+
 #endif
 //
 // Initialize

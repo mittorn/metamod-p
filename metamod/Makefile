@@ -117,12 +117,12 @@ ifeq "$(HOST)" "cygwin"
 		CC=gcc-linux
 	endif
 else
-	ifeq "$(TARGETTYPE)" "amd64"
-		CC=gcc -m64
-		CXX=g++ -m64
-	else
+	ifeq "$(TARGETTYPE)" "i386"
 		CC=gcc -m32
 		CXX=g++ -m32
+	else
+		CC=gcc
+		CXX=g++
 	endif
 endif
 
@@ -193,6 +193,10 @@ FILES_ALL = *.cpp *.h [A-Z]* *.rc
 CFLAGS=-Wall -Wno-unknown-pragmas -Wno-attributes
 
 CFLAGS+=
+
+ifeq "$(XASH3D)" "1"
+CFLAGS += -DXASH_DLSYM_META
+endif
 
 #CFLAGS += -DTEST
 
